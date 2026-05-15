@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tsugiba</string>
+    <string name="mode_walk">Walk</string>
+    <string name="mode_jog">Jog</string>
+    <string name="mode_run">Run</string>
+    <string name="stop_navigation">Stop</string>
+    <string name="notification_tracking">Tracking your location for navigation</string>
+    <string name="location_permission_denied">Location permission is required for navigation</string>
+    <string name="hint_long_press">Long-press on map to set destination</string>
+    <string name="traffic_clear">Clear</string>
+    <string name="traffic_light">Light traffic</string>
+    <string name="traffic_moderate">Moderate traffic</string>
+    <string name="traffic_heavy">Heavy traffic</string>
+</resources>
