@@ -1,0 +1,5 @@
+-keep class com.tsugiba.nav.data.api.response.** { *; }
+-keep class com.google.android.gms.maps.** { *; }
+-dontwarn com.google.android.gms.**
+-keepattributes Signature
+-keepattributes *Annotation*
