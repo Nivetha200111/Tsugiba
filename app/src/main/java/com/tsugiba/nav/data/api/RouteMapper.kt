@@ -1,6 +1,5 @@
 package com.tsugiba.nav.data.api
 
-import android.text.Html
 import com.tsugiba.nav.data.api.response.DirectionsResponse
 import com.tsugiba.nav.data.api.response.LegDto
 import com.tsugiba.nav.data.api.response.RouteDto
@@ -34,7 +33,7 @@ object RouteMapper {
     private fun mapLeg(dto: LegDto) = RouteLeg(
         steps = dto.steps.map { step ->
             RouteStep(
-                instruction = Html.fromHtml(step.htmlInstructions, Html.FROM_HTML_MODE_COMPACT).toString(),
+                instruction = stripHtml(step.htmlInstructions),
                 distanceMeters = step.distance.value,
                 durationSeconds = step.duration.value,
                 startLocation = LatLng(step.startLocation.lat, step.startLocation.lng),
@@ -56,4 +55,7 @@ object RouteMapper {
             else -> TrafficLevel.HEAVY
         }
     }
+
+    private fun stripHtml(html: String): String =
+        html.replace(Regex("<[^>]+>"), "").trim()
 }

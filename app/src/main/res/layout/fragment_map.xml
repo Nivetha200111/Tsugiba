@@ -113,14 +113,18 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="8dp" />
 
-        <!-- Traffic suggestions -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSuggestions"
+        <!-- Traffic suggestions list (scrollable, max 3 visible rows) -->
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxHeight="240dp"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:layout_height="240dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSuggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
