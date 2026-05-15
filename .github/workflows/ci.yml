@@ -18,28 +18,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Download Gradle wrapper jar
-        run: |
-          mkdir -p gradle/wrapper
-          curl -fsSL https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradle/wrapper/gradle-wrapper.jar \
-            -o gradle/wrapper/gradle-wrapper.jar
-
-      - name: Write dummy API key for build
+      - name: Write dummy API key
         run: echo "MAPS_API_KEY=PLACEHOLDER" >> local.properties
 
-      - name: Grant Gradle execute permission
-        run: chmod +x gradlew
-
-      - name: Setup Gradle
+      - name: Setup Gradle 8.6
         uses: gradle/actions/setup-gradle@v3
         with:
-          cache-read-only: false
+          gradle-version: '8.6'
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
+        working-directory: .
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --no-daemon
+        run: gradle testDebugUnitTest --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
