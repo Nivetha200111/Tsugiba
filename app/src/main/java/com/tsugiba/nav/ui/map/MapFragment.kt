@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.google.android.material.snackbar.Snackbar
 import com.tsugiba.nav.R
+import com.tsugiba.nav.data.health.HealthRepository
 import com.tsugiba.nav.data.model.ActivityMode
 import com.tsugiba.nav.data.model.Route
 import com.tsugiba.nav.data.model.TrafficLevel
@@ -56,6 +58,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val trackPoints = mutableListOf<LatLng>()
     private var isTracking = false
     private var startTimeMs = 0L
+    private var healthPermAsked = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var hintsAdapter: HintsAdapter
     private lateinit var suggestionsAdapter: SuggestionsAdapter
@@ -66,26 +69,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val lng = intent.getDoubleExtra(LocationTrackingService.EXTRA_LNG, 0.0)
             val pos = LatLng(lat, lng)
             viewModel.updateLocation(lat, lng)
-            // Trail draws at all times — no Start required
             trackPoints.add(pos)
-            if (trackPoints.size >= 2) {
-                trackPolyline?.points = trackPoints.toList()
-            }
+            if (trackPoints.size >= 2) trackPolyline?.points = trackPoints.toList()
             googleMap?.animateCamera(CameraUpdateFactory.newLatLng(pos))
             if (isTracking) updateLiveStats()
         }
     }
 
-    private val permissionLauncher = registerForActivityResult(
+    private val locationPermLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { perms ->
         if (perms[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-            enableMyLocation()
-            startLocationService()
+            enableMyLocation(); startLocationService()
         } else {
             Snackbar.make(binding.root, R.string.location_permission_denied, Snackbar.LENGTH_LONG).show()
         }
     }
+
+    private val healthPermLauncher = registerForActivityResult(
+        PermissionController.createRequestPermissionResultContract()
+    ) { viewModel.loadHealth() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
@@ -101,7 +104,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupButtons()
         observeState()
         observeHints()
+        observeHealth()
         checkPermissions()
+        viewModel.loadHealth()
     }
 
     private fun setupMap() {
@@ -112,15 +117,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         googleMap = map
         map.uiSettings.isCompassEnabled = true
         map.uiSettings.isZoomControlsEnabled = true
-        // Trail polyline lives for the whole session
         trackPolyline = map.addPolyline(
             PolylineOptions()
                 .color(ContextCompat.getColor(requireContext(), R.color.trail_color))
-                .width(12f)
-                .jointType(JointType.ROUND)
-                .startCap(RoundCap())
-                .endCap(RoundCap())
-                .zIndex(3f)
+                .width(12f).jointType(JointType.ROUND)
+                .startCap(RoundCap()).endCap(RoundCap()).zIndex(3f)
         )
         map.setOnMapLongClickListener { latLng ->
             binding.tvHint.visibility = View.GONE
@@ -192,6 +193,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun observeHealth() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.healthState.collect { state ->
+                    when (state) {
+                        is HealthState.Available -> {
+                            binding.healthCard.visibility = View.VISIBLE
+                            binding.tvHealthSummary.text = state.insight.summary
+                            binding.tvHealthSuggestion.text = state.insight.suggestion
+                        }
+                        is HealthState.NeedsPermission -> {
+                            if (!healthPermAsked) {
+                                healthPermAsked = true
+                                healthPermLauncher.launch(HealthRepository.PERMISSIONS)
+                            } else {
+                                binding.healthCard.visibility = View.GONE
+                            }
+                        }
+                        else -> binding.healthCard.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
     private fun showIdle() {
         binding.bottomSheet.visibility = View.GONE
         binding.btnStopNav.visibility = View.GONE
@@ -239,20 +265,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun updateSuggestions(suggestions: List<TrafficSuggestion>) {
         suggestionsAdapter.submitList(suggestions)
-        val hasSuggestions = suggestions.isNotEmpty()
-        binding.dividerSuggestions.visibility = if (hasSuggestions) View.VISIBLE else View.GONE
-        binding.headerSuggestions.visibility = if (hasSuggestions) View.VISIBLE else View.GONE
+        val has = suggestions.isNotEmpty()
+        binding.dividerSuggestions.visibility = if (has) View.VISIBLE else View.GONE
+        binding.headerSuggestions.visibility = if (has) View.VISIBLE else View.GONE
     }
 
     private fun startTracking() {
         isTracking = true
         startTimeMs = SystemClock.elapsedRealtime()
-        // Reset trail for new activity session
         trackPoints.clear()
         trackPolyline?.points = emptyList()
         binding.btnStart.text = "Stop"
         binding.btnStart.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.traffic_heavy)
         binding.statsCard.visibility = View.VISIBLE
+        binding.healthCard.visibility = View.GONE
         binding.tvHint.visibility = View.GONE
     }
 
@@ -261,7 +287,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.btnStart.text = "Start"
         binding.btnStart.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.secondary)
         binding.statsCard.visibility = View.GONE
-        // Trail stays visible as a record of where you went
+        if (viewModel.healthState.value is HealthState.Available) binding.healthCard.visibility = View.VISIBLE
     }
 
     private fun updateLiveStats() {
@@ -303,7 +329,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun checkPermissions() {
         if (hasLocationPermission()) { startLocationService(); enableMyLocation() }
-        else permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        else locationPermLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
     }
 
     private fun hasLocationPermission() =

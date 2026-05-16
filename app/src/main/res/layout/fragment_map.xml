@@ -18,11 +18,11 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <!-- Top: mode chips -->
+    <!-- Top overlay: chips + hint + health card -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
+        android:layout_gravity="top"
         android:layout_marginTop="12dp"
         android:orientation="vertical"
         android:gravity="center_horizontal">
@@ -40,21 +40,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="🚶 Walk" />
+                android:text="&#x1F6B6; Walk" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipJog"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🏃 Jog" />
+                android:text="&#x1F3C3; Jog" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRun"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🔥 Run" />
+                android:text="&#x1F525; Run" />
         </com.google.android.material.chip.ChipGroup>
 
         <TextView
@@ -69,16 +69,52 @@
             android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:visibility="visible" />
+
+        <!-- Health Connect insight card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/healthCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="#F0FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="10dp">
+
+                <TextView
+                    android:id="@+id/tvHealthSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:alpha="0.65" />
+
+                <TextView
+                    android:id="@+id/tvHealthSuggestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <!-- Live stats card (shown during free tracking) -->
+    <!-- Live stats card (shown during free tracking, replaces health card) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/statsCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="160dp"
         android:visibility="gone"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp">
@@ -121,7 +157,8 @@
                 android:layout_weight="1" android:gravity="center" android:orientation="vertical">
                 <TextView android:id="@+id/tvLiveCalories" android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:text="0"
-                    android:textAppearance="?attr/textAppearanceTitleMedium" android:textColor="@color/traffic_moderate" />
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/traffic_moderate" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:text="kcal" android:textAppearance="?attr/textAppearanceLabelSmall" android:alpha="0.6" />
             </LinearLayout>
@@ -167,7 +204,6 @@
         android:paddingBottom="24dp"
         android:visibility="gone">
 
-        <!-- Route summary -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -204,11 +240,10 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp" />
 
-        <!-- Smart Directions -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="➩ Smart Directions"
+            android:text="&#x27A9; Smart Directions"
             android:textAppearance="?attr/textAppearanceLabelLarge"
             android:textColor="@color/primary"
             android:layout_marginBottom="4dp" />
@@ -220,7 +255,6 @@
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <!-- Better Routes (hidden when empty) -->
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/dividerSuggestions"
             android:layout_width="match_parent"
@@ -232,7 +266,7 @@
             android:id="@+id/headerSuggestions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🚦 Better Routes"
+            android:text="&#x1F6A6; Better Routes"
             android:textAppearance="?attr/textAppearanceLabelLarge"
             android:textColor="@color/traffic_moderate"
             android:layout_marginBottom="4dp"
