@@ -2,6 +2,7 @@ package com.tsugiba.nav.ui.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tsugiba.nav.data.api.LandmarkHintEngine
 import com.tsugiba.nav.data.model.*
 import com.tsugiba.nav.data.repository.NavigationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,37 +24,29 @@ class MapViewModel @Inject constructor(
     private val _currentLocation = MutableStateFlow<LatLng?>(null)
     val currentLocation: StateFlow<LatLng?> = _currentLocation.asStateFlow()
 
-    private val _suggestions = MutableStateFlow<List<TrafficSuggestion>>(emptyList())
-    val suggestions: StateFlow<List<TrafficSuggestion>> = _suggestions.asStateFlow()
+    private val _hints = MutableStateFlow<List<RouteHint>>(emptyList())
+    val hints: StateFlow<List<RouteHint>> = _hints.asStateFlow()
 
-    fun setActivityMode(mode: ActivityMode) {
-        _activityMode.value = mode
-    }
+    fun setActivityMode(mode: ActivityMode) { _activityMode.value = mode }
 
-    fun updateLocation(lat: Double, lng: Double) {
-        _currentLocation.value = LatLng(lat, lng)
-    }
+    fun updateLocation(lat: Double, lng: Double) { _currentLocation.value = LatLng(lat, lng) }
 
     fun searchRoute(destinationLat: Double, destinationLng: Double) {
         val origin = _currentLocation.value ?: return
         viewModelScope.launch {
             _uiState.value = MapUiState.Loading
             repository.getRoutes(
-                originLat = origin.latitude,
-                originLng = origin.longitude,
-                destinationLat = destinationLat,
-                destinationLng = destinationLng,
+                originLat = origin.latitude, originLng = origin.longitude,
+                destinationLat = destinationLat, destinationLng = destinationLng,
                 mode = _activityMode.value
             ).collect { result ->
                 result.fold(
                     onSuccess = { routes ->
+                        _hints.value = LandmarkHintEngine.buildHints(routes.first())
                         val suggestions = repository.buildSuggestions(routes)
-                        _suggestions.value = suggestions
                         _uiState.value = MapUiState.RoutesLoaded(routes, suggestions)
                     },
-                    onFailure = {
-                        _uiState.value = MapUiState.Error(it.message ?: "Unknown error")
-                    }
+                    onFailure = { _uiState.value = MapUiState.Error(it.message ?: "Unknown error") }
                 )
             }
         }
@@ -61,14 +54,18 @@ class MapViewModel @Inject constructor(
 
     fun selectRoute(route: Route) {
         val current = _uiState.value
-        if (current is MapUiState.RoutesLoaded) {
-            _uiState.value = MapUiState.Navigating(route, current.suggestions)
+        val suggestions = when (current) {
+            is MapUiState.RoutesLoaded -> current.suggestions
+            is MapUiState.Navigating -> current.suggestions
+            else -> emptyList()
         }
+        _hints.value = LandmarkHintEngine.buildHints(route)
+        _uiState.value = MapUiState.Navigating(route, suggestions)
     }
 
     fun stopNavigation() {
         _uiState.value = MapUiState.Idle
-        _suggestions.value = emptyList()
+        _hints.value = emptyList()
     }
 }
 
