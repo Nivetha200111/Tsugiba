@@ -18,137 +18,117 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <!-- Mode chips -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupMode"
+    <!-- Top: mode chips -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="16dp"
-        app:singleSelection="true"
-        app:selectionRequired="true">
+        android:layout_marginTop="12dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipWalk"
-            style="@style/Widget.Material3.Chip.Filter"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Walk" />
+            app:singleSelection="true"
+            app:selectionRequired="true">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipJog"
-            style="@style/Widget.Material3.Chip.Filter"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWalk"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="🚶 Walk" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipJog"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏃 Jog" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipRun"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔥 Run" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:id="@+id/tvHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Jog" />
+            android:layout_marginTop="4dp"
+            android:background="#CC000000"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="Long-press map to set destination"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:visibility="visible" />
+    </LinearLayout>
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipRun"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Run" />
-    </com.google.android.material.chip.ChipGroup>
-
-    <!-- Live stats card (shown during tracking) -->
-    <androidx.cardview.widget.CardView
+    <!-- Live stats card (shown during free tracking) -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/statsCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="96dp"
         android:visibility="gone"
         app:cardCornerRadius="16dp"
-        app:cardElevation="6dp">
+        app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="14dp">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvLiveDistance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 m"
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:id="@+id/tvLiveDistance" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0 m"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     android:textColor="@color/primary" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Distance"
-                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Distance" android:textAppearance="?attr/textAppearanceLabelSmall" android:alpha="0.6" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvLiveTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0:00"
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:id="@+id/tvLiveTime" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0:00"
                     android:textAppearance="?attr/textAppearanceTitleLarge" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Time"
-                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Time" android:textAppearance="?attr/textAppearanceLabelSmall" android:alpha="0.6" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvLivePace"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="--'-- /km"
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:id="@+id/tvLivePace" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="--'--"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pace"
-                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Pace /km" android:textAppearance="?attr/textAppearanceLabelSmall" android:alpha="0.6" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvLiveCalories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 kcal"
-                    android:textAppearance="?attr/textAppearanceTitleMedium" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Calories"
-                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:id="@+id/tvLiveCalories" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" android:textColor="@color/traffic_moderate" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="kcal" android:textAppearance="?attr/textAppearanceLabelSmall" android:alpha="0.6" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <!-- START / STOP tracking button -->
+    <!-- Start / Stop free-tracking button -->
     <Button
         android:id="@+id/btnStart"
         android:layout_width="120dp"
@@ -156,13 +136,14 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="48dp"
         android:backgroundTint="@color/secondary"
+        android:elevation="8dp"
         android:text="Start"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
         app:shapeAppearanceOverlay="@style/ShapeCircle" />
 
-    <!-- Stop navigation button -->
+    <!-- Stop navigation FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnStopNav"
         android:layout_width="wrap_content"
@@ -173,7 +154,7 @@
         android:src="@drawable/ic_stop"
         android:visibility="gone" />
 
-    <!-- Route info + suggestions bottom sheet -->
+    <!-- Bottom sheet: route info + smart directions + better routes -->
     <LinearLayout
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
@@ -181,9 +162,12 @@
         android:layout_gravity="bottom"
         android:background="@drawable/bg_bottom_sheet"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="24dp"
         android:visibility="gone">
 
+        <!-- Route summary -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -218,11 +202,46 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp" />
+            android:layout_marginVertical="10dp" />
+
+        <!-- Smart Directions -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="➩ Smart Directions"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="@color/primary"
+            android:layout_marginBottom="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <!-- Better Routes (hidden when empty) -->
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/dividerSuggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/headerSuggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🚦 Better Routes"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="@color/traffic_moderate"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="240dp">
+            android:layout_height="200dp">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSuggestions"
                 android:layout_width="match_parent"
