@@ -5,14 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Full-screen map -->
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Progress indicator -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -20,14 +18,13 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <!-- Activity mode chip group -->
+    <!-- Mode chips -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="16dp"
-        android:background="@android:color/transparent"
         app:singleSelection="true"
         app:selectionRequired="true">
 
@@ -37,36 +34,146 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="@string/mode_walk" />
+            android:text="Walk" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipJog"
             style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mode_jog" />
+            android:text="Jog" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipRun"
             style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mode_run" />
+            android:text="Run" />
     </com.google.android.material.chip.ChipGroup>
 
-    <!-- Stop navigation FAB -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <!-- Live stats card (shown during tracking) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/statsCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="72dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvLiveDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 m"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="@color/primary" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Distance"
+                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvLiveTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00"
+                    android:textAppearance="?attr/textAppearanceTitleLarge" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Time"
+                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvLivePace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--'-- /km"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pace"
+                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvLiveCalories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 kcal"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Calories"
+                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- START / STOP tracking button -->
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="@color/secondary"
+        android:text="Start"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:shapeAppearanceOverlay="@style/ShapeCircle" />
+
+    <!-- Stop navigation button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnStopNav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="16dp"
         android:layout_marginTop="72dp"
-        android:text="@string/stop_navigation"
-        android:visibility="gone"
-        app:icon="@drawable/ic_stop" />
+        android:src="@drawable/ic_stop"
+        android:visibility="gone" />
 
-    <!-- Bottom sheet with route info and suggestions -->
+    <!-- Route info + suggestions bottom sheet -->
     <LinearLayout
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
@@ -77,7 +184,6 @@
         android:padding="16dp"
         android:visibility="gone">
 
-        <!-- Route summary row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,6 +211,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
+                android:textStyle="bold"
                 android:textAppearance="?attr/textAppearanceLabelMedium" />
         </LinearLayout>
 
@@ -113,11 +220,9 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="8dp" />
 
-        <!-- Traffic suggestions list (scrollable, max 3 visible rows) -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="240dp">
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSuggestions"
                 android:layout_width="match_parent"
