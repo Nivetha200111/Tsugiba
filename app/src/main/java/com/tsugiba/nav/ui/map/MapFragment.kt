@@ -24,9 +24,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.RoundCap
 import com.google.android.material.snackbar.Snackbar
 import com.tsugiba.nav.R
 import com.tsugiba.nav.data.model.ActivityMode
@@ -64,12 +66,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val lng = intent.getDoubleExtra(LocationTrackingService.EXTRA_LNG, 0.0)
             val pos = LatLng(lat, lng)
             viewModel.updateLocation(lat, lng)
-            if (isTracking) {
-                trackPoints.add(pos)
+            // Trail draws at all times — no Start required
+            trackPoints.add(pos)
+            if (trackPoints.size >= 2) {
                 trackPolyline?.points = trackPoints.toList()
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(pos))
-                updateLiveStats()
             }
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLng(pos))
+            if (isTracking) updateLiveStats()
         }
     }
 
@@ -109,6 +112,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         googleMap = map
         map.uiSettings.isCompassEnabled = true
         map.uiSettings.isZoomControlsEnabled = true
+        // Trail polyline lives for the whole session
+        trackPolyline = map.addPolyline(
+            PolylineOptions()
+                .color(ContextCompat.getColor(requireContext(), R.color.trail_color))
+                .width(12f)
+                .jointType(JointType.ROUND)
+                .startCap(RoundCap())
+                .endCap(RoundCap())
+                .zIndex(3f)
+        )
         map.setOnMapLongClickListener { latLng ->
             binding.tvHint.visibility = View.GONE
             viewModel.searchRoute(latLng.latitude, latLng.longitude)
@@ -234,11 +247,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun startTracking() {
         isTracking = true
         startTimeMs = SystemClock.elapsedRealtime()
+        // Reset trail for new activity session
         trackPoints.clear()
-        trackPolyline?.remove()
-        trackPolyline = googleMap?.addPolyline(
-            PolylineOptions().color(ContextCompat.getColor(requireContext(), R.color.route_active)).width(10f).zIndex(2f)
-        )
+        trackPolyline?.points = emptyList()
         binding.btnStart.text = "Stop"
         binding.btnStart.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.traffic_heavy)
         binding.statsCard.visibility = View.VISIBLE
@@ -250,6 +261,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.btnStart.text = "Start"
         binding.btnStart.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.secondary)
         binding.statsCard.visibility = View.GONE
+        // Trail stays visible as a record of where you went
     }
 
     private fun updateLiveStats() {
