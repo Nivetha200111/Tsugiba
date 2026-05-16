@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId = "com.tsugiba.nav"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
@@ -43,11 +43,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions { jvmTarget = "17" }
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -70,6 +72,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.maps.ktx)
     implementation(libs.maps.utils.ktx)
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha09")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso)
